@@ -42,8 +42,9 @@ DeviceAddress temperature1 {0x28, 0x2A, 0xAC, 0x29, 0x07, 0x00, 0x00, 0xEC};
 #include <Adafruit_SSD1306.h>
 #include <Wire.h>
 
+// 128x64 / 128x32
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
-#define SCREEN_HEIGHT 32 // OLED display height, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
 #define OLED_RESET    -1 // Reset pin # (or -1 if sharing Arduino reset pin)
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET); //Declaring the display name (display)
@@ -54,43 +55,31 @@ void setup() {
   sensors.begin();
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C); //Start the OLED display
   display.clearDisplay();
+  display.setTextColor(WHITE);
+  display.setTextSize(5);
+  display.setCursor(30, 12);
+  display.println(":)");
   display.display();
 }
 
 void loop() {
   unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= interval) {
+
     // save the last time you blinked the LED
     previousMillis = currentMillis;
     sensors.requestTemperatures();
     float t1 = sensors.getTempC(temperature1);
+    String temperature = String(t1, 1);
+
     Serial.print(t1);Serial.println(F(" °C"));
     // display
     display.clearDisplay();
-    display.setTextSize(1);
     display.setTextColor(WHITE);
-    display.setCursor(0,4);
-    display.println("Ambient");
 
-    display.setTextSize(2);
-    display.setCursor(50,0);
-    display.println(t1,1);
-
-    display.setCursor(110,0);
-    display.println("C");
-
-    display.setTextSize(1);
-    display.setTextColor(WHITE);
-    display.setCursor(0,20);
-    display.println("Target");
-
-    display.setTextSize(2);
-    display.setCursor(50,17);
-    display.println(t1,1);
-
-    display.setCursor(110,17);
-    display.println("C");
-
+    display.setTextSize(5);
+    display.setCursor(6,12);
+    display.println(temperature);
     display.display();
   }
 }
